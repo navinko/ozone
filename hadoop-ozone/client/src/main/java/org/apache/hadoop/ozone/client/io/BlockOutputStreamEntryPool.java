@@ -366,7 +366,7 @@ public class BlockOutputStreamEntryPool implements KeyMetadataAware {
     }
   }
 
-    synchronized BlockOutputStreamEntry getCurrentStreamEntry() {
+  synchronized BlockOutputStreamEntry getCurrentStreamEntry() {
     if (streamEntries.isEmpty() || streamEntries.size() <= currentStreamIndex) {
       return null;
     } else {
