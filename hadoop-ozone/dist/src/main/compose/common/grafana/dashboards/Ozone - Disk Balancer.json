@@ -1,348 +1,941 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "13.0.2"
+    },
+    {
+      "type": "panel",
+      "id": "piechart",
+      "name": "Pie chart",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
-        "builtIn": true,
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
         "enable": true,
         "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      },
+      {
+        "builtIn": 1,
+        "enable": true,
+        "hide": true,
+        "iconColor": "",
         "name": "Annotations & Alerts",
         "type": "dashboard"
       }
     ]
   },
+  "description": "",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
     {
-      "id": 2,
-      "title": "Disk Space Convergence Profile (Historical Before vs After)",
-      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "Shows how full each disk is over time. When the balancer is running, you should see these lines slowly move closer together until they meet in the middle.",
-      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 7 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.2",
       "targets": [
         {
-          "expr": "sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode.*\"}) by (instance, storagedirectory)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode\"}) by (instance, storagedirectory)",
           "legendFormat": "{{storagedirectory}}",
           "refId": "A"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "decbytes",
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2
-          }
-        }
-      }
+      "title": "Disk Space Convergence Profile (Historical Before vs After)",
+      "type": "timeseries"
     },
     {
-      "id": 3,
-      "title": "Current Disk Space Allocation Skew (Max - Min Volume Gap)",
-      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
       "description": "The exact size of the data gap between your most full disk and your emptiest disk right now. The balancer's goal is to shrink this number down to zero.",
-      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 7 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "targets": [
-        {
-          "expr": "max(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode.*\"}) by (instance, storagedirectory)) by (instance) - min(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode.*\"}) by (instance, storagedirectory)) by (instance)",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
       "fieldConfig": {
         "defaults": {
-          "unit": "decbytes",
-          "max": 5368709120
-        }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
       },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
       "options": {
         "displayMode": "lcd",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
         "orientation": "horizontal",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
-    },
-    {
-      "id": 5,
-      "title": "Active Balancing Throughput Speed",
-      "type": "stat",
-      "description": "The live speedometer. This shows exactly how fast data is physically copying from one disk to another across the node.",
-      "gridPos": { "x": 0, "y": 7, "w": 6, "h": 7 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "targets": [
-        {
-          "expr": "rate(disk_balancer_service_metrics_success_bytes{instance=~\"$datanode.*\"}[1m])",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps"
-        }
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
       },
-      "options": {
-        "graphMode": "area",
-        "textMode": "value",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
-    },
-    {
-      "id": 7,
-      "title": "Unscheduled Target Backlog",
-      "type": "stat",
-      "description": "The remaining amount of data the balancer still needs to queue up to reach perfect balance.",
-      "gridPos": { "x": 6, "y": 7, "w": 8, "h": 7 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "pluginVersion": "13.0.2",
       "targets": [
         {
-          "expr": "max({__name__=~\"volume_info_metrics_data_disk[0-9]+_ozone_used\", instance=~\"$datanode.*\"}) by (instance) - avg({__name__=~\"volume_info_metrics_data_disk[0-9]+_ozone_used\", instance=~\"$datanode.*\"}) by (instance)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode\"}) by (instance, storagedirectory)) by (instance) - min(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode\"}) by (instance, storagedirectory)) by (instance)",
           "instant": true,
           "refId": "A"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "decbytes"
-        }
-      },
-      "options": {
-        "graphMode": "none",
-        "textMode": "value",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
+      "title": "Current Disk Space Allocation Skew (Max - Min Volume Gap)",
+      "type": "bargauge"
     },
     {
-      "id": 8,
-      "title": "Est. Time for Unscheduled Backlog",
-      "type": "stat",
-      "description": "A rough estimate of how many minutes are left before the balancer finishes balancing.",
-      "gridPos": { "x": 14, "y": 7, "w": 10, "h": 7 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "targets": [
-        {
-          "expr": "((sum(max({__name__=~\"volume_info_metrics_data_disk[0-9]+_ozone_used\", instance=~\"$datanode.*\"}) by (instance) - avg({__name__=~\"volume_info_metrics_data_disk[0-9]+_ozone_used\", instance=~\"$datanode.*\"}) by (instance)) / (sum(rate(disk_balancer_service_metrics_success_bytes{instance=~\"$datanode.*\"}[1m])) > 0)) / 60) or vector(0)",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "m"
-        }
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
       },
-      "options": {
-        "graphMode": "none",
-        "textMode": "value",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
-    },
-    {
-      "id": 6,
-      "title": "Container Migration Latency Profile (Processing Duration)",
-      "type": "timeseries",
       "description": "How much time it takes the system to successfully copy, verify, and finalize a single container.",
-      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 7 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 6,
+      "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.2",
       "targets": [
         {
-          "expr": "{__name__=~\"disk_balancer_service_metrics_copy_success_latency|disk_balancer_service_metrics_copy_failure_latency|disk_balancer_service_metrics_move_success_time_avg_time\", instance=~\"$datanode.*\"}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "{__name__=~\"disk_balancer_service_metrics_move_success_time_avg_time|disk_balancer_service_metrics_move_failure_time_avg_time\", instance=~\"$datanode\"}",
           "legendFormat": "{{__name__}}",
           "refId": "A"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ms",
-          "color": { "mode": "palette-classic" }
-        }
-      }
+      "title": "Container Migration Latency Profile (Processing Duration)",
+      "type": "timeseries"
     },
     {
-      "id": 11,
-      "title": "Overall Move Success Rate",
-      "type": "gauge",
-      "description": "The percentage of container moves that finished perfectly.",
-      "gridPos": { "x": 0, "y": 21, "w": 5, "h": 6 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "targets": [
-        {
-          "expr": "(sum(disk_balancer_service_metrics_success_count) / (sum(disk_balancer_service_metrics_success_count) + sum(disk_balancer_service_metrics_failure_count) + 0.00001)) * 100",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "The live speedometer. This shows exactly how fast data is physically copying from one disk to another across the node.",
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "value": 0, "color": "green" },
-              { "value": 80, "color": "red" }
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
             ]
-          }
-        }
+          },
+          "unit": "Bps"
+        },
+        "overrides": []
       },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
-    },
-    {
-      "id": 12,
-      "title": "Total Lifetime Container Moves",
-      "type": "stat",
-      "description": "The total number of individual data blocks (containers) successfully relocated by the balancer.",
-      "gridPos": { "x": 5, "y": 21, "w": 4, "h": 6 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "targets": [
-        {
-          "expr": "max_over_time(disk_balancer_service_metrics_success_count{instance=~\"$datanode.*\"}[1h])",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "noValue": "0",
-          "unit": "short"
-        }
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 9
       },
+      "id": 5,
       "options": {
-        "graphMode": "none",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
         "textMode": "value",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
-    },
-    {
-      "id": 14,
-      "title": "Total Lifetime Data Balanced",
-      "type": "stat",
-      "description": "The total physical weight of all the data successfully shifted across the disks since the balancer started.",
-      "gridPos": { "x": 9, "y": 21, "w": 5, "h": 6 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.2",
       "targets": [
         {
-          "expr": "max_over_time(disk_balancer_service_metrics_success_bytes{instance=~\"$datanode.*\"}[1h])",
-          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "rate(disk_balancer_service_metrics_success_bytes{instance=~\"$datanode\"}[1m])",
           "refId": "A"
         }
       ],
+      "title": "Active Balancing Throughput Speed",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "The remaining amount of data the balancer still needs to queue up to reach perfect balance.",
       "fieldConfig": {
         "defaults": {
-          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "decbytes"
-        }
+        },
+        "overrides": []
       },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 6,
+        "y": 9
+      },
+      "id": 7,
       "options": {
-        "graphMode": "area",
-        "textMode": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
-    },
-    {
-      "id": 15,
-      "title": "Failed Container Moves",
-      "type": "stat",
-      "description": "The number of times a move was aborted due to error. This should ideally stay at 0.",
-      "gridPos": { "x": 14, "y": 21, "w": 4, "h": 6 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.2",
       "targets": [
         {
-          "expr": "max_over_time(disk_balancer_service_metrics_failure_count{instance=~\"$datanode.*\"}[1h])",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode\"}) by (instance, storagedirectory)) by (instance) - avg(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode\"}) by (instance, storagedirectory)) by (instance)",
           "instant": true,
           "refId": "A"
         }
       ],
+      "title": "Unscheduled Target Backlog",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "A rough estimate of how many minutes are left before the balancer finishes balancing.",
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "m"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 10,
+        "x": 14,
+        "y": 9
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "((sum(max(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode\"}) by (instance, storagedirectory)) by (instance) - avg(sum({__name__=~\"volume_info_metrics_.*_ozone_used\", instance=~\"$datanode\"}) by (instance, storagedirectory)) by (instance)) / (sum(rate(disk_balancer_service_metrics_success_bytes{instance=~\"$datanode\"}[1m])) > 0)) / 60) or vector(0)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Est. Time for Unscheduled Backlog",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "The percentage of container moves that finished perfectly.",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 0,
+        "y": 14
+      },
+      "id": 11,
+      "options": {
+        "barShape": "flat",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": false,
+          "centerGlow": false,
+          "gradient": true
+        },
+        "endpointMarker": "point",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": true,
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "(sum(disk_balancer_service_metrics_success_count{instance=~\"$datanode\"}) / (sum(disk_balancer_service_metrics_success_count{instance=~\"$datanode\"}) + sum(disk_balancer_service_metrics_failure_count{instance=~\"$datanode\"}) + 0.00001)) * 100",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Overall Move Success Rate",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "The total number of individual data blocks (containers) successfully relocated by the balancer.",
       "fieldConfig": {
         "defaults": {
           "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "value": 0, "color": "green" },
-              { "value": 1, "color": "red" }
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
             ]
-          }
-        }
+          },
+          "unit": "short"
+        },
+        "overrides": []
       },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 5,
+        "y": 14
+      },
+      "id": 12,
       "options": {
-        "graphMode": "area",
-        "textMode": "auto",
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
-    },
-    {
-      "id": 13,
-      "title": "Balancer Idle Reason",
-      "type": "piechart",
-      "description": "Shows why the balancer is taking a break. 'Target Reached' means the disks are already balanced. 'Throttled' means it's slowing down on purpose so it doesn't overload the server.",
-      "gridPos": { "x": 18, "y": 21, "w": 6, "h": 6 },
-      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.2",
       "targets": [
         {
-          "expr": "sum(increase(disk_balancer_service_metrics_idle_loop_no_available_volume_pair_count[15m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max_over_time(disk_balancer_service_metrics_success_count{instance=~\"$datanode\"}[1h])",
           "instant": true,
-          "legendFormat": "Target Reached",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Lifetime Container Moves",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "The total physical weight of all the data successfully shifted across the disks since the balancer started.",
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 9,
+        "y": 14
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max_over_time(disk_balancer_service_metrics_success_bytes{instance=~\"$datanode\"}[1h])",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Lifetime Data Balanced",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "The number of times a move was aborted due to error. This should ideally stay at 0.",
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 14,
+        "y": 14
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "max_over_time(disk_balancer_service_metrics_failure_count{instance=~\"$datanode\"}[1h])",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Failed Container Moves",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Counts scheduler loops where DiskBalancer is still running but did not queue any container move. 'No Suitable Volume/Container' increments when the policy cannot find a valid source/destination volume pair with a movable container (for example, disks are already even, density is below threshold, or no container matches the allowed states). 'Throttled' increments when the scheduler deliberately waits because the configured bandwidth limit was reached.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 14
+      },
+      "id": 13,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(increase(disk_balancer_service_metrics_idle_loop_no_available_volume_pair_count{instance=~\"$datanode\"}[15m]))",
+          "instant": true,
+          "legendFormat": "No Suitable Volume/Container",
           "refId": "A"
         },
         {
-          "expr": "sum(increase(disk_balancer_service_metrics_idle_loop_exceeds_bandwidth_count[15m]))",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "expr": "sum(increase(disk_balancer_service_metrics_idle_loop_exceeds_bandwidth_count{instance=~\"$datanode\"}[15m]))",
           "instant": true,
           "legendFormat": "Throttled",
           "refId": "B"
         }
       ],
-      "options": {
-        "pieType": "donut",
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
-        "reduceOptions": { "calcs": ["lastNotNull"] }
-      }
+      "title": "Balancer Idle Reason",
+      "type": "piechart"
     }
   ],
+  "preload": false,
   "refresh": "5s",
-  "schemaVersion": 38,
-  "style": "dark",
-  "tags": ["Ozone", "DiskBalancer"],
+  "schemaVersion": 42,
+  "tags": [],
   "templating": {
     "list": [
       {
-        "current": {},
-        "hide": 0,
+        "allowCustomValue": true,
+        "current": {
+          "text": "",
+          "value": "${DS_PROMETHEUS}",
+          "selected": true
+        },
         "includeAll": false,
         "label": "Data Source",
-        "multi": false,
         "name": "datasource",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
-        "skipUrlSync": false,
+        "regex": "",
         "type": "datasource"
       },
       {
+        "allowCustomValue": true,
         "current": {},
-        "datasource": { "type": "prometheus", "uid": "${datasource}" },
-        "definition": "label_values(disk_balancer_service_metrics_volume_data_density, instance)",
-        "hide": 0,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(disk_balancer_service_metrics_success_count, instance)",
         "includeAll": true,
         "multi": true,
         "name": "datanode",
         "options": [],
         "query": {
-          "query": "label_values(disk_balancer_service_metrics_volume_data_density, instance)",
+          "query": "label_values(disk_balancer_service_metrics_success_count, instance)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
+        "regexApplyTo": "value",
         "sort": 1,
         "type": "query"
       }
@@ -352,7 +945,23 @@
     "from": "now-5m",
     "to": "now"
   },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
   "timezone": "browser",
   "title": "Ozone Disk Balancer Operations",
-  "uid": "ozone-disk-balancer"
+  "uid": "ad6cf2f",
+  "version": 1,
+  "weekStart": ""
 }
